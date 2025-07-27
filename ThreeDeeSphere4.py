@@ -32,6 +32,7 @@ for p in range(32):
 bounching_angle = 0
 bounching_angle_y = 0
 
+angle = 0
 # main loop
 while True:
     for event in pygame.event.get():
@@ -55,26 +56,19 @@ while True:
         # color is gray shaded based on z value, white when z is closest to camera
         color_value = int(255 * (1 - (pz + 2) / 4))
     
-        
         color = (color_value, color_value, color_value)
-        
-        x_proj, y_proj = point.project()
+    
+        # Go around the y-axis
+        xn = point.x * np.cos(angle) - point.z * np.sin(angle)
+        zn = point.x * np.sin(angle) + point.z * np.cos(angle)
+            
+        x_proj, y_proj = point.project_with_xn_yn_zn(xn, point.getY(), zn)
         
         x_proj += bounching_value_x
         y_proj += bounching_value_y
         pygame.draw.circle(screen, color, (x_proj, y_proj), 1)
 
-        # if the radius is < 1.9999 or > 2.001, correct the position of the point
-        if np.abs(np.sqrt(point.x**2 + point.y**2 + point.z**2) - 2) > 0.001:
-            point.x = 2 * point.x / np.sqrt(point.x**2 + point.y**2 + point.z**2)
-            point.y = 2 * point.y / np.sqrt(point.x**2 + point.y**2 + point.z**2)
-            point.z = 2 * point.z / np.sqrt(point.x**2 + point.y**2 + point.z**2)
-        else:
-            # Update points, so that they go around the y-axis
-            point.x = point.x * np.cos(0.01) - point.z * np.sin(0.01)
-            point.z = point.x * np.sin(0.01) + point.z * np.cos(0.01)
-
-
+    angle += 0.01
         
     bounching_angle += 0.05
     if bounching_angle > 2 * np.pi:
