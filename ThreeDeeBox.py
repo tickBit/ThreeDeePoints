@@ -44,7 +44,8 @@ for z in np.linspace(-1, 1, 10):
 
         x = 2
         points.append(Point3D.Point3D(x, y, z))
-        
+
+angle = 0
 # Main loop
 while True:
     for event in pygame.event.get():
@@ -60,6 +61,14 @@ while True:
         
         pz = point.getZ()
         
+        # update points around the y-axis
+        # Now, the box won't shrink, because the original coordinates are not changed in the rotation;
+        # only current coordinates are calculated based on the angle
+        
+        # Rotate the point around the y-axis
+        zn = point.z * np.cos(angle) - point.x * np.sin(angle)
+        xn = point.x * np.cos(angle) + point.z * np.sin(angle)
+        
         # color is is gray shaded based on z value, white, when z is closest to camera
         color_value = int(255 * (1 - (pz + 2) / 6))
         if color_value < 0:
@@ -69,13 +78,11 @@ while True:
             
         color = (color_value, color_value, color_value)
         
-        x_proj, y_proj = point.project()
+        x_proj, y_proj = point.project_with_xn_yn_zn(xn, point.getY(), zn)
         pygame.draw.circle(screen, color, (x_proj, y_proj), 2)
         
-        # update points around the y-axis
-        point.z = point.z * np.cos(0.0125) - point.x * np.sin(0.0125)
-        point.x = point.z * np.sin(0.0125) + point.x * np.cos(0.0125)
-        
+    angle += 0.0125
+    
     # Update the display
     pygame.display.flip()
     # Control the frame rate
