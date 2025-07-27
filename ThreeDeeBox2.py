@@ -53,7 +53,7 @@ for z in np.linspace(-1.0, 1.0, 10):
         x = 1.0
         points.append(Point3D.Point3D(x, y, z))
 
-times = 0
+angle = 0
 # Main loop
 while True:
     for event in pygame.event.get():
@@ -72,8 +72,12 @@ while True:
         
         pz = point.getZ()
         
-        point.z = point.z * np.cos(np.pi/180.0) - point.x * np.sin(np.pi/180.0)
-        point.x = point.z * np.sin(np.pi/180.0) + point.x * np.cos(np.pi/180.0)
+        # Now, the box won't shrink, because the original coordinates are not changed in the rotation;
+        # only current coordinates are calculated based on the angle
+        
+        # Rotate the point around the y-axis
+        zn = point.z * np.cos(angle) - point.x * np.sin(angle)
+        xn = point.x * np.cos(angle) + point.z * np.sin(angle)
         
         # color is is gray shaded based on z value, white, when z is closest to camera
         color_value = int(255 * (1 - (pz + 2) / 4))
@@ -90,58 +94,24 @@ while True:
             ry_proj += bounching_value
             pygame.draw.circle(screen, RED, (rx_proj, ry_proj), 6)
             
-            x_proj, y_proj = point.project()
+            x_proj, y_proj = point.project_with_xn_yn_zn(xn, point.getY(), zn)
             pygame.draw.circle(screen, color, (x_proj, y_proj), 3)
             
         else:
-            x_proj, y_proj = point.project()
+            x_proj, y_proj = point.project_with_xn_yn_zn(xn, point.getY(), zn)
             pygame.draw.circle(screen, color, (x_proj, y_proj), 3)
         
             rx_proj, ry_proj = redPoint.project()
             ry_proj += bounching_value
             pygame.draw.circle(screen, RED, (rx_proj, ry_proj), 6)
         
-                            
+    
+    angle += np.pi/180.0
+                       
     bouncinng_angle += 0.05
     if bouncinng_angle > 2 * np.pi:
         bouncinng_angle = 0
     bounching_value = int(50 * np.sin(bouncinng_angle))
-    
-    # There is a little glitch, when I have the time, I try to work with better data structures
-    times += 1
-    if times == 359:
-        times = 0
-        # reset the points of the box
-        # Create a list of 3D points forming a ball
-        points = []
-
-        # form a box with 6 faces
-        for x in np.linspace(-1.0, 1.0, 10):
-            for y in np.linspace(-1.0, 1.0, 10):
-                
-                z = -1.0
-                points.append(Point3D.Point3D(x, y, z))
-                
-                z = 1.0
-                points.append(Point3D.Point3D(x, y, z))
-                
-        for z in np.linspace(-1.0, 1.0, 10):
-            for x in np.linspace(-1.0, 1.0, 10):
-                
-                y = -1.0
-                points.append(Point3D.Point3D(x, y, z))
-
-                y = 1.0
-                points.append(Point3D.Point3D(x, y, z))
-                
-        for z in np.linspace(-1.0, 1.0, 10):
-            for y in np.linspace(-1.0, 1.0, 10):
-                
-                x = -1.0
-                points.append(Point3D.Point3D(x, y, z))
-
-                x = 1.0
-                points.append(Point3D.Point3D(x, y, z))
             
     # Update the display
     pygame.display.flip()
