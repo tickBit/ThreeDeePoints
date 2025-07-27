@@ -4,13 +4,20 @@ class Point3D:
         self.x = x
         self.y = y
         self.z = z
-
+        
     def project(self):
         
         # Simple perspective projection
         factor = 200 / (self.z + 4)
         x_proj = int(self.x * factor + 400)
         y_proj = int(self.y * factor + 300)
+        return (x_proj, y_proj)
+    
+    def project_with_xn_yn_zn(self, xn, yn, zn):
+        # Adjust the projection based on new coordinates
+        factor = 200 / (zn + 4)
+        x_proj = int(xn * factor + 400)
+        y_proj = int(yn * factor + 300)
         return (x_proj, y_proj)
     
     def getY(self):
