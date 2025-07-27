@@ -27,7 +27,8 @@ for p in range(32):
         
         # Create a Point3D object and add it to the list
         points.append(Point3D.Point3D(x, y, z))
-        
+
+angle = 0    
 # main loop
 while True:
     for event in pygame.event.get():
@@ -41,18 +42,20 @@ while True:
     # Project and draw the points
     for point in points:
         pz = point.getZ()
-        
+
+        # Go around the y-axis
+        xn = point.x * np.cos(angle) - point.z * np.sin(angle)
+        zn = point.x * np.sin(angle) + point.z * np.cos(angle)        
         # color is gray shaded based on z value, white when z is closest to camera
         color_value = int(255 * (1 - (pz + 2) / 4))
         color = (color_value, color_value, color_value)
         
-        x_proj, y_proj = point.project()
+        x_proj, y_proj = point.project_with_xn_yn_zn(xn, point.getY(), zn)
         pygame.draw.circle(screen, color, (x_proj, y_proj), 1)
 
-        # Update points, so that they go around the y-axis
-        point.x = point.x * np.cos(0.01) - point.z * np.sin(0.01)
-        point.z = point.x * np.sin(0.01) + point.z * np.cos(0.01)
-      
+    
+    angle += 0.01
+        
     # Update the display
     pygame.display.flip()
     # Control the frame rate
