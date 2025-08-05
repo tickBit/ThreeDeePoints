@@ -1,6 +1,6 @@
 # Some 3D point effects
 
-Two simple 3D effects created with points :-) The only libraries you'll need are:
+The only libraries you'll need are:
 
 - pygame
 - numpy
